@@ -3,8 +3,6 @@
 <head>
   <meta charset="UTF-8" />
   <title>AllPlay 🎶</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="icon" type="image/png" href="music.png" />
   <style>
     :root {
       --bg-color: #f4f4f4;
@@ -197,165 +195,164 @@
   </footer>
 
   <script src="https://www.youtube.com/iframe_api"></script>
- <script>
-  const apiKey = 'AIzaSyDHP2EWHt-9Pm4_L20lHeVt3Qotb8WYIZU';
-  const searchButton = document.getElementById('searchButton');
-  const searchInput = document.getElementById('search');
-  const resultsList = document.getElementById('results');
-  const playlistItems = document.getElementById('playlistItems');
+  <script>
+    const apiKey = 'AIzaSyDHP2EWHt-9Pm4_L20lHeVt3Qotb8WYIZU';
+    const searchButton = document.getElementById('searchButton');
+    const searchInput = document.getElementById('search');
+    const resultsList = document.getElementById('results');
+    const playlistItems = document.getElementById('playlistItems');
 
-  let playlist = JSON.parse(localStorage.getItem('playlist')) || [];
-  let currentVideo = null;
-  let currentPlaylistIndex = -1;
-  let ytPlayer = null;
+    let playlist = JSON.parse(localStorage.getItem('playlist')) || [];
+    let currentVideo = null;
+    let currentPlaylistIndex = -1;
+    let ytPlayer = null;
 
-  function toggleDarkMode() {
-    document.body.classList.toggle("dark");
-  }
-
-  function switchPage(pageId) {
-    document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
-    document.getElementById(pageId).classList.add('active');
-  }
-
-  searchButton.addEventListener('click', handleSearch);
-  searchInput.addEventListener('keypress', e => {
-    if (e.key === 'Enter') handleSearch();
-  });
-
-  function handleSearch() {
-    const query = searchInput.value.trim();
-    if (!query) return alert('Please enter a search term!');
-    const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(query)}&type=video&videoCategoryId=10&key=${apiKey}`;
-    fetch(url)
-      .then(res => res.json())
-      .then(data => displayResults(data.items))
-      .catch(err => console.error('Error:', err));
-  }
-
-  function displayResults(items) {
-    resultsList.innerHTML = '';
-    items.forEach(item => {
-      const li = document.createElement('li');
-      const row = document.createElement('div');
-      row.className = 'content-row';
-
-      const img = document.createElement('img');
-      img.src = item.snippet.thumbnails.default.url;
-
-      const title = document.createElement('p');
-      title.textContent = item.snippet.title;
-
-      const saveBtn = document.createElement('button');
-      saveBtn.className = 'small-btn';
-      saveBtn.textContent = 'Save to Playlist';
-      saveBtn.onclick = e => {
-        e.stopPropagation();
-        saveToPlaylist(item.snippet.title, item.id.videoId);
-      };
-
-      row.append(img, title, saveBtn);
-      li.appendChild(row);
-      li.onclick = () => playVideoInline(li, item.id.videoId);
-      resultsList.appendChild(li);
-    });
-  }
-
-  function playVideoInline(container, videoId) {
-    if (currentVideo) currentVideo.remove();
-
-    const wrapper = document.createElement('div');
-    wrapper.className = 'video-wrapper';
-    wrapper.innerHTML = `<iframe src="https://www.youtube.com/embed/${videoId}?autoplay=1" frameborder="0" allowfullscreen></iframe>`;
-    container.appendChild(wrapper);
-    currentVideo = wrapper;
-  }
-
-  function saveToPlaylist(title, videoId) {
-    if (playlist.find(song => song.videoId === videoId)) {
-      alert('This song is already in your playlist!');
-      return;
+    function toggleDarkMode() {
+      document.body.classList.toggle("dark");
     }
 
-    playlist.push({ title, videoId });
-    localStorage.setItem('playlist', JSON.stringify(playlist));
-    updatePlaylist();
-  }
+    function switchPage(pageId) {
+      document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
+      document.getElementById(pageId).classList.add('active');
+    }
 
-  function updatePlaylist() {
-    playlistItems.innerHTML = '';
-    playlist.forEach((song, index) => {
-      const li = document.createElement('li');
-      const row = document.createElement('div');
-      row.className = 'content-row';
-
-      const img = document.createElement('img');
-      img.src = `https://img.youtube.com/vi/${song.videoId}/default.jpg`;
-
-      const title = document.createElement('p');
-      title.textContent = song.title;
-
-      const removeBtn = document.createElement('button');
-      removeBtn.className = 'small-btn';
-      removeBtn.textContent = 'Remove';
-      removeBtn.onclick = e => {
-        e.stopPropagation();
-        removeFromPlaylist(song.videoId);
-      };
-
-      row.append(img, title, removeBtn);
-      li.appendChild(row);
-
-      li.onclick = () => {
-        currentPlaylistIndex = index;
-        playPlaylistVideo(li, song.videoId);
-      };
-
-      playlistItems.appendChild(li);
+    searchButton.addEventListener('click', handleSearch);
+    searchInput.addEventListener('keypress', e => {
+      if (e.key === 'Enter') handleSearch();
     });
-  }
 
-  function removeFromPlaylist(videoId) {
-    playlist = playlist.filter(song => song.videoId !== videoId);
-    localStorage.setItem('playlist', JSON.stringify(playlist));
-    updatePlaylist();
-  }
+    function handleSearch() {
+      const query = searchInput.value.trim();
+      if (!query) return alert('Please enter a search term!');
+      const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(query)}&type=video&videoCategoryId=10&key=${apiKey}`;
+      fetch(url)
+        .then(res => res.json())
+        .then(data => displayResults(data.items))
+        .catch(err => console.error('Error:', err));
+    }
 
-  function playPlaylistVideo(container, videoId) {
-    if (currentVideo) currentVideo.remove();
-    if (ytPlayer && ytPlayer.destroy) ytPlayer.destroy();
+    function displayResults(items) {
+      resultsList.innerHTML = '';
+      items.forEach(item => {
+        const li = document.createElement('li');
+        const row = document.createElement('div');
+        row.className = 'content-row';
 
-    const wrapper = document.createElement('div');
-    wrapper.className = 'video-wrapper';
-    const iframe = document.createElement('iframe');
-    iframe.src = `https://www.youtube.com/embed/${videoId}?enablejsapi=1&autoplay=1`;
-    iframe.frameborder = '0';
-    iframe.allowFullscreen = true;
-    iframe.id = 'ytPlayer';
-    wrapper.appendChild(iframe);
-    container.appendChild(wrapper);
-    currentVideo = wrapper;
+        const img = document.createElement('img');
+        img.src = item.snippet.thumbnails.default.url;
 
-    setTimeout(() => {
-      ytPlayer = new YT.Player('ytPlayer', {
-        events: {
-          onStateChange: event => {
-            if (event.data === YT.PlayerState.ENDED) {
-              const nextIndex = currentPlaylistIndex + 1;
-              if (nextIndex < playlist.length) {
-                const nextLi = playlistItems.children[nextIndex];
-                currentPlaylistIndex = nextIndex;
-                playPlaylistVideo(nextLi, playlist[nextIndex].videoId);
+        const title = document.createElement('p');
+        title.textContent = item.snippet.title;
+
+        const saveBtn = document.createElement('button');
+        saveBtn.className = 'small-btn';
+        saveBtn.textContent = 'Save to Playlist';
+        saveBtn.onclick = e => {
+          e.stopPropagation();
+          saveToPlaylist(item.snippet.title, item.id.videoId);
+        };
+
+        row.append(img, title, saveBtn);
+        li.appendChild(row);
+        li.onclick = () => playVideoInline(li, item.id.videoId);
+        resultsList.appendChild(li);
+      });
+    }
+
+    function playVideoInline(container, videoId) {
+      if (currentVideo) currentVideo.remove();
+
+      const wrapper = document.createElement('div');
+      wrapper.className = 'video-wrapper';
+      wrapper.innerHTML = `<iframe src="https://www.youtube.com/embed/${videoId}?autoplay=1" frameborder="0" allowfullscreen></iframe>`;
+      container.appendChild(wrapper);
+      currentVideo = wrapper;
+    }
+
+    function saveToPlaylist(title, videoId) {
+      if (playlist.find(song => song.videoId === videoId)) {
+        alert('🎵 This song is already in your playlist!');
+        return;
+      }
+
+      playlist.push({ title, videoId });
+      localStorage.setItem('playlist', JSON.stringify(playlist));
+      updatePlaylist();
+    }
+
+    function updatePlaylist() {
+      playlistItems.innerHTML = '';
+      playlist.forEach((song, index) => {
+        const li = document.createElement('li');
+        const row = document.createElement('div');
+        row.className = 'content-row';
+
+        const img = document.createElement('img');
+        img.src = `https://img.youtube.com/vi/${song.videoId}/default.jpg`;
+
+        const title = document.createElement('p');
+        title.textContent = song.title;
+
+        const removeBtn = document.createElement('button');
+        removeBtn.className = 'small-btn';
+        removeBtn.textContent = 'Remove';
+        removeBtn.onclick = e => {
+          e.stopPropagation();
+          removeFromPlaylist(song.videoId);
+        };
+
+        row.append(img, title, removeBtn);
+        li.appendChild(row);
+
+        li.onclick = () => {
+          currentPlaylistIndex = index;
+          playPlaylistVideo(li, song.videoId);
+        };
+
+        playlistItems.appendChild(li);
+      });
+    }
+
+    function removeFromPlaylist(videoId) {
+      playlist = playlist.filter(song => song.videoId !== videoId);
+      localStorage.setItem('playlist', JSON.stringify(playlist));
+      updatePlaylist();
+    }
+
+    function playPlaylistVideo(container, videoId) {
+      if (currentVideo) currentVideo.remove();
+      if (ytPlayer && ytPlayer.destroy) ytPlayer.destroy();
+
+      const wrapper = document.createElement('div');
+      wrapper.className = 'video-wrapper';
+      const iframe = document.createElement('iframe');
+      iframe.src = `https://www.youtube.com/embed/${videoId}?enablejsapi=1&autoplay=1`;
+      iframe.frameborder = '0';
+      iframe.allowFullscreen = true;
+      iframe.id = 'ytPlayer';
+      wrapper.appendChild(iframe);
+      container.appendChild(wrapper);
+      currentVideo = wrapper;
+
+      setTimeout(() => {
+        ytPlayer = new YT.Player('ytPlayer', {
+          events: {
+            onStateChange: event => {
+              if (event.data === YT.PlayerState.ENDED) {
+                const nextIndex = currentPlaylistIndex + 1;
+                if (nextIndex < playlist.length) {
+                  const nextLi = playlistItems.children[nextIndex];
+                  currentPlaylistIndex = nextIndex;
+                  playPlaylistVideo(nextLi, playlist[nextIndex].videoId);
+                }
               }
             }
           }
-        }
-      });
-    }, 100);
-  }
+        });
+      }, 100);
+    }
 
-  updatePlaylist();
-</script>
-
+    updatePlaylist();
+  </script>
 </body>
 </html>

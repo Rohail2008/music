@@ -3,14 +3,9 @@
 <head>
   <meta charset="UTF-8" />
   <title>AllPlay 🎶</title>
-  <!-- Favicon for browsers -->
-<link rel="icon" type="image/png" href="/allplay-icon.png">
-
-<!-- Apple Touch Icon for iOS devices -->
-<link rel="apple-touch-icon" href="/allplay-icon.png">
-
-<!-- PWA/Android support -->
-<link rel="manifest" href="/manifest.json">
+  <link rel="icon" type="image/png" href="/allplay-icon.png">
+  <link rel="apple-touch-icon" href="/allplay-icon.png">
+  <link rel="manifest" href="/manifest.json">
 
   <style>
     :root {
@@ -34,6 +29,7 @@
       margin: 0;
       padding: 0;
       transition: background 0.3s, color 0.3s;
+      font-size: 16px;
     }
 
     nav {
@@ -169,16 +165,65 @@
       padding: 5px 10px;
       border-radius: 5px;
       cursor: pointer;
+      z-index: 1001;
     }
 
+    /* Responsive adjustments */
     @media screen and (max-width: 600px) {
-      .content-row { flex-direction: column; align-items: flex-start; }
+      body {
+        font-size: 14px;
+      }
+
+      nav a {
+        font-size: 14px;
+        margin: 0 5px;
+      }
+
+      header h1 {
+        font-size: 1.5rem;
+      }
+
+      input[type="text"] {
+        font-size: 14px;
+        padding: 8px;
+        max-width: 90%;
+      }
+
+      #searchButton {
+        font-size: 14px;
+        padding: 8px 16px;
+      }
+
+      button.small-btn {
+        font-size: 12px;
+        padding: 4px 8px;
+      }
+
+      li img {
+        width: 50px;
+        height: 50px;
+      }
+
+      iframe {
+        height: 250px;
+      }
+
+      .content-row {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      footer {
+        font-size: 12px;
+        padding: 0 10px;
+      }
     }
   </style>
 </head>
 <body>
 
-  <button class="dark-toggle" onclick="toggleDarkMode()">🌓 Dark Mode</button>
+  <!-- Rest of your HTML remains unchanged -->
+  <!-- ... --><button class="dark-toggle" onclick="toggleDarkMode()">🌓 Dark Mode</button>
 
   <nav>
     <a onclick="switchPage('homePage')">Home</a>
@@ -363,5 +408,6 @@
 
     updatePlaylist();
   </script>
+  
 </body>
 </html>

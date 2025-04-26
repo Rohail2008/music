@@ -2,283 +2,298 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>AllPlay 🎶</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<link rel="icon" type="image/png" sizes="512x512" href="/allplay-icon.png">
-<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
-<link rel="manifest" href="/manifest.json">
-
-
+  <link rel="icon" href="/allplay-icon.png" />
+  <link rel="manifest" href="/manifest.json" />
   <style>
     :root {
-      --bg-color: #f4f4f4;
-      --text-color: #000;
-      --card-bg: #fff;
+      --bg: #f9f9fb;
+      --text: #111;
+      --accent: #ff4b5c;
+      --card: #ffffff;
+      --glass: rgba(255, 255, 255, 0.7);
+      --glass-dark: rgba(0, 0, 0, 0.5);
+      --shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     }
 
-    body.dark {
-      --bg-color: #121212;
-      --text-color: #fff;
-      --card-bg: #1e1e1e;
+    [data-theme="dark"] {
+      --bg: #121212;
+      --text: #f5f5f5;
+      --card: #1e1e1e;
+      --glass: rgba(255, 255, 255, 0.1);
+      --shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
     }
 
     * {
       box-sizing: border-box;
-    }
-
-    html {
-      font-size: 16px;
+      transition: all 0.3s ease;
     }
 
     body {
-      font-family: Arial, sans-serif;
-      background-color: var(--bg-color);
-      color: var(--text-color);
       margin: 0;
-      padding: 0;
-      transition: background 0.3s, color 0.3s;
+      font-family: "Segoe UI", sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
     }
 
     nav {
-      position: sticky;
+      position: fixed;
+      width: 100%;
       top: 0;
-      background-color: var(--card-bg);
-      padding: 10px;
-      text-align: center;
-      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-      z-index: 1000;
+      left: 0;
+      background: var(--glass);
+      backdrop-filter: blur(15px);
+      display: flex;
+      justify-content: center;
+      gap: 40px;
+      padding: 15px 0;
+      box-shadow: var(--shadow);
+      z-index: 999;
     }
 
     nav a {
-      margin: 0 10px;
+      color: var(--accent);
       text-decoration: none;
-      color: red;
-      font-weight: bold;
+      font-weight: 600;
+      font-size: 18px;
+      position: relative;
+    }
+
+    nav a.active::after {
+      content: "";
+      position: absolute;
+      bottom: -5px;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: var(--accent);
+      border-radius: 2px;
+    }
+
+    .theme-toggle {
+      position: fixed;
+      top: 15px;
+      right: 20px;
+      background: var(--glass);
+      border: none;
+      padding: 8px 12px;
+      border-radius: 10px;
       cursor: pointer;
-      font-size: 1rem;
+      color: var(--text);
+      font-size: 16px;
+      z-index: 1000;
     }
 
     .page {
       display: none;
-      max-width: 800px;
-      margin: 0 auto;
-      padding: 20px;
+      max-width: 900px;
+      margin: 100px auto 40px;
+      padding: 0 20px;
     }
 
-    .active {
+    .page.active {
       display: block;
     }
 
     header h1 {
-      color: red;
-      font-size: 2rem;
       text-align: center;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      flex-wrap: wrap;
+      color: var(--accent);
+      font-size: 2.8rem;
+      margin-bottom: 25px;
     }
 
-    input[type="text"] {
-      padding: 12px;
-      width: 100%;
-      border-radius: 5px;
-      border: 1px solid #ccc;
-      font-size: 1rem;
-      display: block;
-      margin: 10px auto;
-      max-width: 100%;
+    .input-group {
+      position: relative;
+      display: flex;
+      align-items: center;
+      background: var(--card);
+      border-radius: 12px;
+      padding: 12px 16px;
+      box-shadow: var(--shadow);
+      max-width: 500px;
+      margin: 20px auto;
+      border: 2px solid transparent;
+    }
+
+    .input-group.active {
+      border-color: var(--accent);
+    }
+
+    .input-group::before {
+      content: "🔍";
+      margin-right: 10px;
+      font-size: 20px;
+      color: var(--accent);
+    }
+
+    .input-group input {
+      flex: 1;
+      border: none;
+      outline: none;
+      background: transparent;
+      font-size: 16px;
+      color: var(--text);
+    }
+
+    .clear-btn {
+      display: none;
+      background: none;
+      border: none;
+      font-size: 20px;
+      color: var(--accent);
+      cursor: pointer;
     }
 
     #searchButton {
-      padding: 10px 20px;
-      background-color: black;
-      color: white;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-      font-size: 1rem;
-      margin: 10px auto 0;
       display: block;
+      margin: 10px auto 30px;
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 12px;
+      font-size: 16px;
+      cursor: pointer;
     }
 
     ul {
       list-style: none;
       padding: 0;
-      margin-top: 20px;
     }
 
     li {
-      background: var(--card-bg);
-      margin-bottom: 20px;
+      background: var(--card);
+      border-radius: 14px;
+      margin: 15px 0;
       padding: 15px;
-      border-radius: 5px;
-      transition: background 0.3s;
+      box-shadow: var(--shadow);
       cursor: pointer;
+      overflow: hidden;
+      transition: transform 0.2s ease;
     }
 
     li:hover {
-      background: #eaeaea;
+      transform: translateY(-3px);
     }
 
     .content-row {
       display: flex;
       align-items: center;
       gap: 15px;
-      flex-wrap: wrap;
     }
 
     li img {
       width: 60px;
       height: 60px;
-      border-radius: 5px;
+      border-radius: 10px;
+      object-fit: cover;
     }
 
     li p {
       flex: 1;
       margin: 0;
-      font-weight: bold;
+      font-weight: 600;
+      font-size: 16px;
     }
 
-    .video-wrapper {
-      margin-top: 10px;
-    }
-
-    iframe {
+    .video-wrapper iframe {
       width: 100%;
-      height: 350px;
-      border-radius: 10px;
+      height: 360px;
+      border: none;
+      border-radius: 12px;
+      margin-top: 15px;
     }
 
     button.small-btn {
-      padding: 5px 10px;
+      background: var(--accent);
+      color: white;
+      border: none;
+      padding: 6px 14px;
+      border-radius: 8px;
       font-size: 14px;
-      margin-left: 5px;
+      cursor: pointer;
     }
 
     footer {
       text-align: center;
+      color: #aaa;
+      margin: 60px 0 20px;
       font-size: 14px;
-      color: #888;
-      margin: 50px 0 20px;
-      padding: 0 10px;
     }
 
-    .dark-toggle {
-      position: fixed;
-      top: 10px;
-      right: 10px;
-      background: #333;
-      color: #fff;
-      border: none;
-      padding: 5px 10px;
-      border-radius: 5px;
-      cursor: pointer;
-      z-index: 1001;
-    }
-
-    @media screen and (max-width: 600px) {
-      html {
-        font-size: 14px;
-      }
-
-      nav a {
-        font-size: 0.9rem;
-        margin: 0 6px;
-      }
-
-      header h1 {
-        font-size: 1.5rem;
-      }
-
-      input[type="text"] {
-        font-size: 0.95rem;
-        padding: 10px;
-      }
-
-      #searchButton {
-        font-size: 0.95rem;
-        padding: 10px 18px;
-      }
-
-      button.small-btn {
-        font-size: 12px;
-        padding: 4px 8px;
-      }
-
-      li img {
-        width: 50px;
-        height: 50px;
-      }
-
-      iframe {
-        height: 220px;
-      }
-
-      .content-row {
-        flex-direction: column;
-        align-items: flex-start;
-      }
-
-      footer {
-        font-size: 12px;
-      }
+    footer a {
+      color: var(--accent);
     }
   </style>
 </head>
-<body>
+<body data-theme="light">
 
-  <button class="dark-toggle" onclick="toggleDarkMode()">🌓 Dark Mode</button>
+  <button class="theme-toggle" onclick="cycleTheme()">🌓</button>
 
   <nav>
-    <a onclick="switchPage('homePage')">Home</a>
-    <a onclick="switchPage('playlistPage')">Playlist</a>
+    <a href="#" onclick="switchPage('homePage', this)" class="active">Home</a>
+    <a href="#" onclick="switchPage('playlistPage', this)">Playlist</a>
   </nav>
 
   <div id="homePage" class="page active">
-    <header>
-      <h1>AllPlay 🎶</h1>
-      <input type="text" id="search" placeholder="Search for music..." />
-      <button id="searchButton">Search</button>
-    </header>
+    <header><h1>AllPlay 🎶</h1></header>
+    <div class="input-group" id="inputGroup">
+      <input type="text" id="search" placeholder="Search your favorite songs..." />
+      <button class="clear-btn" id="clearSearch">×</button>
+    </div>
+    <button id="searchButton">Search</button>
     <ul id="results"></ul>
   </div>
 
   <div id="playlistPage" class="page">
-    <h2 style="text-align:center;">Your Playlist</h2>
+    <h2 style="text-align:center; color:var(--accent);">Your Playlist</h2>
     <ul id="playlistItems"></ul>
   </div>
 
   <footer>
-    <p>&copy; 2023-2025 All rights reserved. <a href="https://chrohail.org/" target="_blank">By Chauhdry Rohail</a></p>
+    <p>&copy; 2023–2025 All rights reserved. <a href="https://chrohail.org/" target="_blank">Chaudhry Rohail</a></p>
   </footer>
 
   <script src="https://www.youtube.com/iframe_api"></script>
   <script>
     const apiKey = 'AIzaSyDHP2EWHt-9Pm4_L20lHeVt3Qotb8WYIZU';
-    const searchButton = document.getElementById('searchButton');
     const searchInput = document.getElementById('search');
+    const clearBtn = document.getElementById('clearSearch');
+    const inputGroup = document.getElementById('inputGroup');
     const resultsList = document.getElementById('results');
     const playlistItems = document.getElementById('playlistItems');
-
+    let currentVideo = null, ytPlayer = null, currentPlaylistIndex = -1;
     let playlist = JSON.parse(localStorage.getItem('playlist')) || [];
-    let currentVideo = null;
-    let currentPlaylistIndex = -1;
-    let ytPlayer = null;
 
-    function toggleDarkMode() {
-      document.body.classList.toggle("dark");
+    function cycleTheme() {
+      const current = document.body.getAttribute("data-theme");
+      const hour = new Date().getHours();
+      const next = current === "light" ? "dark" : current === "dark" ? "auto" : (hour < 7 || hour >= 19 ? "dark" : "light");
+      document.body.setAttribute("data-theme", next === "auto" ? (hour < 7 || hour >= 19 ? "dark" : "light") : next);
     }
 
-    function switchPage(pageId) {
-      document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
-      document.getElementById(pageId).classList.add('active');
+    function switchPage(id, el) {
+      document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+      document.getElementById(id).classList.add('active');
+      document.querySelectorAll('nav a').forEach(a => a.classList.remove('active'));
+      el.classList.add('active');
     }
 
-    searchButton.addEventListener('click', handleSearch);
-    searchInput.addEventListener('keypress', e => {
-      if (e.key === 'Enter') handleSearch();
+    searchInput.addEventListener('input', () => {
+      clearBtn.style.display = searchInput.value ? 'inline' : 'none';
+      inputGroup.classList.toggle('active', !!searchInput.value);
     });
+
+    clearBtn.addEventListener('click', () => {
+      searchInput.value = '';
+      resultsList.innerHTML = '';
+      clearBtn.style.display = 'none';
+      inputGroup.classList.remove('active');
+    });
+
+    document.getElementById('searchButton').addEventListener('click', handleSearch);
+    searchInput.addEventListener('keypress', e => { if (e.key === 'Enter') handleSearch(); });
 
     function handleSearch() {
       const query = searchInput.value.trim();
@@ -296,22 +311,15 @@
         const li = document.createElement('li');
         const row = document.createElement('div');
         row.className = 'content-row';
-
-        const img = document.createElement('img');
-        img.src = item.snippet.thumbnails.default.url;
-
-        const title = document.createElement('p');
-        title.textContent = item.snippet.title;
-
-        const saveBtn = document.createElement('button');
-        saveBtn.className = 'small-btn';
-        saveBtn.textContent = 'Save to Playlist';
-        saveBtn.onclick = e => {
+        row.innerHTML = `
+          <img src="${item.snippet.thumbnails.default.url}" />
+          <p>${item.snippet.title}</p>
+          <button class="small-btn">Save</button>
+        `;
+        row.querySelector('button').onclick = e => {
           e.stopPropagation();
           saveToPlaylist(item.snippet.title, item.id.videoId);
         };
-
-        row.append(img, title, saveBtn);
         li.appendChild(row);
         li.onclick = () => playVideoInline(li, item.id.videoId);
         resultsList.appendChild(li);
@@ -320,20 +328,15 @@
 
     function playVideoInline(container, videoId) {
       if (currentVideo) currentVideo.remove();
-
       const wrapper = document.createElement('div');
       wrapper.className = 'video-wrapper';
-      wrapper.innerHTML = `<iframe src="https://www.youtube.com/embed/${videoId}?autoplay=1" frameborder="0" allowfullscreen></iframe>`;
+      wrapper.innerHTML = `<iframe src="https://www.youtube.com/embed/${videoId}?autoplay=1" allowfullscreen></iframe>`;
       container.appendChild(wrapper);
       currentVideo = wrapper;
     }
 
     function saveToPlaylist(title, videoId) {
-      if (playlist.find(song => song.videoId === videoId)) {
-        alert('🎵 This song is already in your playlist!');
-        return;
-      }
-
+      if (playlist.find(song => song.videoId === videoId)) return alert('🎵 Already in playlist!');
       playlist.push({ title, videoId });
       localStorage.setItem('playlist', JSON.stringify(playlist));
       updatePlaylist();
@@ -345,29 +348,20 @@
         const li = document.createElement('li');
         const row = document.createElement('div');
         row.className = 'content-row';
-
-        const img = document.createElement('img');
-        img.src = `https://img.youtube.com/vi/${song.videoId}/default.jpg`;
-
-        const title = document.createElement('p');
-        title.textContent = song.title;
-
-        const removeBtn = document.createElement('button');
-        removeBtn.className = 'small-btn';
-        removeBtn.textContent = 'Remove';
-        removeBtn.onclick = e => {
+        row.innerHTML = `
+          <img src="https://img.youtube.com/vi/${song.videoId}/default.jpg" />
+          <p>${song.title}</p>
+          <button class="small-btn">Remove</button>
+        `;
+        row.querySelector('button').onclick = e => {
           e.stopPropagation();
           removeFromPlaylist(song.videoId);
         };
-
-        row.append(img, title, removeBtn);
         li.appendChild(row);
-
         li.onclick = () => {
           currentPlaylistIndex = index;
           playPlaylistVideo(li, song.videoId);
         };
-
         playlistItems.appendChild(li);
       });
     }
@@ -381,15 +375,9 @@
     function playPlaylistVideo(container, videoId) {
       if (currentVideo) currentVideo.remove();
       if (ytPlayer && ytPlayer.destroy) ytPlayer.destroy();
-
       const wrapper = document.createElement('div');
       wrapper.className = 'video-wrapper';
-      const iframe = document.createElement('iframe');
-      iframe.src = `https://www.youtube.com/embed/${videoId}?enablejsapi=1&autoplay=1`;
-      iframe.frameborder = '0';
-      iframe.allowFullscreen = true;
-      iframe.id = 'ytPlayer';
-      wrapper.appendChild(iframe);
+      wrapper.innerHTML = `<iframe src="https://www.youtube.com/embed/${videoId}?enablejsapi=1&autoplay=1" id="ytPlayer" allowfullscreen></iframe>`;
       container.appendChild(wrapper);
       currentVideo = wrapper;
 
@@ -398,11 +386,11 @@
           events: {
             onStateChange: event => {
               if (event.data === YT.PlayerState.ENDED) {
-                const nextIndex = currentPlaylistIndex + 1;
-                if (nextIndex < playlist.length) {
-                  const nextLi = playlistItems.children[nextIndex];
-                  currentPlaylistIndex = nextIndex;
-                  playPlaylistVideo(nextLi, playlist[nextIndex].videoId);
+                const next = currentPlaylistIndex + 1;
+                if (next < playlist.length) {
+                  currentPlaylistIndex = next;
+                  const nextLi = playlistItems.children[next];
+                  playPlaylistVideo(nextLi, playlist[next].videoId);
                 }
               }
             }

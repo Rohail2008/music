@@ -41,7 +41,6 @@
       position: fixed;
       width: 100%;
       top: 0;
-      left: 0;
       background: var(--glass);
       backdrop-filter: blur(15px);
       display: flex;
@@ -147,7 +146,7 @@
 
     #searchButton {
       display: block;
-      margin: 10px auto 30px;
+      margin: 10px auto 10px;
       background: var(--accent);
       color: #fff;
       border: none;
@@ -155,6 +154,14 @@
       border-radius: 12px;
       font-size: 16px;
       cursor: pointer;
+    }
+
+    #loadingText {
+      text-align: center;
+      color: var(--accent);
+      font-size: 16px;
+      margin-bottom: 20px;
+      display: none;
     }
 
     ul {
@@ -243,6 +250,7 @@
       <button class="clear-btn" id="clearSearch">×</button>
     </div>
     <button id="searchButton">Search</button>
+    <p id="loadingText">🔄 Searching...</p>
     <ul id="results"></ul>
   </div>
 
@@ -263,6 +271,7 @@
     const inputGroup = document.getElementById('inputGroup');
     const resultsList = document.getElementById('results');
     const playlistItems = document.getElementById('playlistItems');
+    const loadingText = document.getElementById('loadingText');
     let currentVideo = null, ytPlayer = null, currentPlaylistIndex = -1;
     let playlist = JSON.parse(localStorage.getItem('playlist')) || [];
 
@@ -288,6 +297,7 @@
     clearBtn.addEventListener('click', () => {
       searchInput.value = '';
       resultsList.innerHTML = '';
+      loadingText.style.display = 'none';
       clearBtn.style.display = 'none';
       inputGroup.classList.remove('active');
     });
@@ -298,11 +308,19 @@
     function handleSearch() {
       const query = searchInput.value.trim();
       if (!query) return alert('Please enter a search term!');
+      resultsList.innerHTML = '';
+      loadingText.style.display = 'block';
       const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(query)}&type=video&videoCategoryId=10&key=${apiKey}`;
       fetch(url)
         .then(res => res.json())
-        .then(data => displayResults(data.items))
-        .catch(err => console.error('Error:', err));
+        .then(data => {
+          loadingText.style.display = 'none';
+          displayResults(data.items);
+        })
+        .catch(err => {
+          loadingText.style.display = 'none';
+          console.error('Error:', err);
+        });
     }
 
     function displayResults(items) {

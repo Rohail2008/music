@@ -1,97 +1,183 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" >
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>AllPlay 🎶</title>
+  <title>AllPlay 🎶 - Multi Playlist</title>
   <style>
     :root {
       --bg: #f9f9fb;
       --text: #111;
       --accent: #ff4b5c;
-      --card: #ffffff;
-      --glass: rgba(255, 255, 255, 0.7);
-      --shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      --card: #fff;
+      --glass: rgba(255,255,255,0.7);
+      --shadow: 0 4px 12px rgba(0,0,0,0.1);
     }
-
     body {
       margin: 0;
       font-family: "Segoe UI", sans-serif;
-      background-color: var(--bg);
+      background: var(--bg);
       color: var(--text);
+      overflow-x: hidden;
     }
-
-    nav {
+    nav.top-nav {
       position: fixed;
-      width: 100%;
-      top: 0;
+      top: 0; left: 0; right: 0;
       background: var(--glass);
       backdrop-filter: blur(15px);
       display: flex;
-      justify-content: center;
+      justify-content: center; /* center the links */
       gap: 40px;
-      padding: 15px 0;
+      padding: 15px 20px;
       box-shadow: var(--shadow);
-      z-index: 999;
+      z-index: 1000;
+      align-items: center;
+      user-select: none;
     }
-
-    nav a {
-      color: var(--accent);
+    nav.top-nav a {
       text-decoration: none;
+      color: var(--accent);
       font-weight: 600;
       font-size: 18px;
       position: relative;
       cursor: pointer;
     }
-
-    nav a.active::after {
+    nav.top-nav a.active::after {
       content: "";
       position: absolute;
-      bottom: -5px;
-      left: 0;
-      right: 0;
+      bottom: -5px; left: 0; right: 0;
       height: 2px;
       background: var(--accent);
       border-radius: 2px;
     }
-
-    .page {
+    /* Nav toggle button on right */
+    #navToggleBtn {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: var(--accent);
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 44px;
+      height: 44px;
+      font-size: 26px;
+      cursor: pointer;
       display: none;
+      z-index: 1100;
+      box-shadow: 0 4px 12px rgba(255, 75, 92, 0.6);
+      user-select: none;
+      transition: background-color 0.3s ease, box-shadow 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0;
+    }
+    #navToggleBtn:hover {
+      background-color: #e03e4e;
+      box-shadow: 0 6px 16px rgba(224, 62, 78, 0.8);
+    }
+    /* Side Nav */
+    #sideNav {
+      position: fixed;
+      top: 0; right: 0;
+      height: 100vh;
+      width: 0;
+      background: var(--glass);
+      backdrop-filter: blur(20px);
+      box-shadow: var(--shadow);
+      overflow-x: hidden;
+      transition: width 0.3s ease;
+      padding: 20px 10px;
+      display: flex;
+      flex-direction: column;
+      z-index: 1050;
+      visibility: hidden;
+      user-select: none;
+    }
+    #sideNav.open {
+      width: 250px; /* narrower side nav */
+      visibility: visible;
+    }
+    #sideNav .closeBtn {
+      align-self: flex-end;
+      background: none;
+      border: none;
+      font-size: 28px;
+      color: var(--accent);
+      cursor: pointer;
+      margin-bottom: 20px;
+      user-select: none;
+    }
+    #sideNav a, #sideNav button, #sideNav select, #sideNav input[type="text"] {
+      margin: 5px 0;
+      font-size: 14px;
+      border-radius: 10px;
+      border: 1.5px solid var(--accent);
+      background: var(--card);
+      color: var(--text);
+      padding: 10px 14px;
+      cursor: pointer;
+      outline: none;
+      text-align: center;
+    }
+    #sideNav a {
+      text-decoration: none;
+      font-weight: 600;
+    }
+    #sideNav a.active, #sideNav button.active {
+      background: var(--accent);
+      color: white;
+      border-color: var(--accent);
+    }
+    #sideNav a:hover, #sideNav button:hover, #sideNav select:hover, #sideNav input[type="text"]:hover {
+      background-color: #e03e4e;
+      color: white;
+      border-color: #e03e4e;
+    }
+    #sideNav select, #sideNav input[type="text"] {
+      width: 100%;
+      box-sizing: border-box;
+    }
+    .page {
       max-width: 900px;
       margin: 100px auto 40px;
       padding: 0 20px;
+      display: none;
     }
-
     .page.active {
       display: block;
     }
-
-    h1, h2 {
+    header h1 {
       text-align: center;
       color: var(--accent);
-      margin: 20px 0;
+      font-size: 3rem;
+      margin-bottom: 30px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      user-select: none;
     }
-
     .input-group {
-      position: relative;
-      display: flex;
-      align-items: center;
-      background: var(--card);
-      border-radius: 12px;
-      padding: 12px 16px;
-      box-shadow: var(--shadow);
       max-width: 500px;
       margin: 20px auto;
-      border: 2px solid var(--accent);
+      padding: 12px 16px;
+      border-radius: 12px;
+      background: var(--card);
+      box-shadow: var(--shadow);
+      display: flex;
+      align-items: center;
+      border: 2px solid transparent;
     }
-
+    .input-group.active {
+      border-color: var(--accent);
+    }
     .input-group::before {
       content: "🔍";
       margin-right: 10px;
       font-size: 20px;
       color: var(--accent);
     }
-
     .input-group input {
       flex: 1;
       border: none;
@@ -100,42 +186,111 @@
       font-size: 16px;
       color: var(--text);
     }
-
-    #clearSearch {
+    .clear-btn {
       background: none;
       border: none;
-      font-size: 22px;
+      font-size: 20px;
       color: var(--accent);
       cursor: pointer;
+      display: none;
       padding: 0 8px;
       user-select: none;
+    }
+    #searchButton {
+      display: block;
+      margin: 10px auto 10px;
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 12px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+    #searchButton:hover {
+      background-color: #e03e4e;
+    }
+    #loadingText {
+      text-align: center;
+      color: var(--accent);
+      font-size: 16px;
+      margin-bottom: 20px;
       display: none;
     }
-
-    button {
+    ul {
+      list-style: none;
+      padding: 0;
+      max-width: 600px;
+      margin: 0 auto 40px;
+      user-select: none;
+    }
+    li {
+      background: var(--card);
+      border-radius: 14px;
+      margin: 15px 0;
+      padding: 15px;
+      box-shadow: var(--shadow);
+      cursor: pointer;
+      overflow: hidden;
+      transition: transform 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+    li:hover {
+      transform: translateY(-3px);
+    }
+    li img {
+      width: 60px;
+      height: 60px;
+      border-radius: 10px;
+      object-fit: cover;
+      flex-shrink: 0;
+    }
+    li p {
+      flex: 1;
+      margin: 0;
+      font-weight: 600;
+      font-size: 16px;
+    }
+    button.small-btn {
       background: var(--accent);
       color: white;
       border: none;
-      padding: 10px 16px;
-      border-radius: 10px;
+      padding: 6px 14px;
+      border-radius: 8px;
       font-size: 14px;
       cursor: pointer;
-      margin: 5px;
+      flex-shrink: 0;
+      user-select: none;
     }
-
-    button:hover {
-      background-color: #e03e4e;
+    .video-wrapper iframe {
+      width: 100%;
+      height: 360px;
+      border: none;
+      border-radius: 12px;
+      margin-top: 15px;
+      user-select: none;
     }
-
+    footer {
+      text-align: center;
+      color: #aaa;
+      margin: 60px 0 20px;
+      font-size: 14px;
+      user-select: none;
+    }
+    footer a {
+      color: var(--accent);
+    }
     .playlist-controls {
       display: flex;
-      flex-wrap: wrap;
       justify-content: center;
       gap: 10px;
-      margin: 20px auto;
-      max-width: 800px;
+      flex-wrap: wrap;
+      max-width: 900px;
+      margin: 0 auto 30px;
     }
-
     .playlist-controls input,
     .playlist-controls select,
     .playlist-controls button {
@@ -144,305 +299,421 @@
       border-radius: 10px;
       border: 1px solid #ccc;
       outline: none;
+      min-width: 130px;
+      box-sizing: border-box;
+      cursor: pointer;
     }
-
     .playlist-controls button {
       background: var(--accent);
       color: white;
       border: none;
-      cursor: pointer;
+      white-space: nowrap;
+      transition: background-color 0.3s ease;
     }
-
     .playlist-controls button:hover {
       background-color: #e03e4e;
     }
-
-    ul {
-      list-style: none;
-      padding: 0;
-    }
-
-    li {
-      background: var(--card);
-      border-radius: 14px;
-      margin: 15px 0;
-      padding: 15px;
-      box-shadow: var(--shadow);
-      transition: transform 0.2s ease;
-      cursor: pointer;
-    }
-
-    li:hover {
-      transform: translateY(-3px);
-    }
-
-    .content-row {
-      display: flex;
-      align-items: center;
-      gap: 15px;
-      flex-wrap: wrap;
-    }
-
-    li img {
-      width: 60px;
-      height: 60px;
-      border-radius: 10px;
-      object-fit: cover;
-    }
-
-    li p {
-      flex: 1;
-      margin: 0;
-      font-weight: 600;
-      font-size: 16px;
-    }
-
-    .video-wrapper iframe {
-      width: 100%;
-      height: 320px;
-      border: none;
-      border-radius: 12px;
-      margin-top: 15px;
-    }
-
-    footer {
-      text-align: center;
-      color: #aaa;
-      margin: 60px 0 20px;
-      font-size: 14px;
-    }
-
-    footer a {
-      color: var(--accent);
-    }
-
-    @media (max-width: 700px) {
+    /* Responsive */
+    @media (max-width: 900px) {
+      #navToggleBtn {
+        display: flex;
+      }
+      nav.top-nav {
+        justify-content: center; /* keep links center on small screens */
+        padding: 15px 20px;
+      }
       .playlist-controls {
-        flex-direction: column;
-        align-items: stretch;
+        display: none !important;
       }
-
-      .playlist-controls input,
-      .playlist-controls select,
-      .playlist-controls button {
-        width: 100%;
-      }
-
-      .video-wrapper iframe {
-        height: 200px;
+      header {
+        display: none;
       }
     }
   </style>
 </head>
 <body>
 
-<nav>
-  <a onclick="switchPage('homePage', this)" class="active">Home</a>
-  <a onclick="switchPage('playlistPage', this)">Playlist</a>
-</nav>
+  <!-- Top nav with links centered -->
+  <nav class="top-nav">
+    <a href="#" id="homeTab" class="active" aria-current="page">Home</a>
+    <a href="#" id="playlistTab">Playlist</a>
+  </nav>
 
-<div id="homePage" class="page active">
-  <h1>AllPlay 🎶</h1>
-  <div class="input-group" id="searchGroup">
-    <input
-      type="text"
-      id="searchInput"
-      placeholder="Search for music..."
-      oninput="toggleClearButton()"
-      onkeydown="if(event.key==='Enter'){handleSearch();}"
-    />
-    <button id="clearSearch" onclick="clearSearch()">×</button>
-  </div>
-  <div style="text-align:center;">
-    <button onclick="handleSearch()" id="searchBtn">Search</button>
-  </div>
-  <ul id="results"></ul>
-</div>
+  <!-- Nav toggle button on right -->
+  <button id="navToggleBtn" title="Open menu" aria-label="Open menu">☰</button>
 
-<div id="playlistPage" class="page">
-  <h2>Your Playlist</h2>
+  <!-- Side navigation panel -->
+  <nav id="sideNav" aria-label="Site Navigation">
+    <button class="closeBtn" aria-label="Close menu">×</button>
+    <a href="#" id="navHomeLink">Home</a>
+    <a href="#" id="navPlaylistLink">Playlist</a>
 
-  <div class="playlist-controls">
-    <input type="text" id="newPlaylistName" placeholder="New playlist name" />
-    <button onclick="createPlaylist()">Create</button>
-    <select id="playlistSelector" onchange="switchPlaylist(this.value)">
+    <h2>Playlist Controls</h2>
+    <input type="text" id="sideNewPlaylistName" placeholder="New playlist name" aria-label="New playlist name" />
+    <button id="sideCreateBtn">Create</button>
+
+    <select id="sidePlaylistSelector" aria-label="Select playlist">
       <option value="" disabled selected>Select Playlist</option>
     </select>
-    <button onclick="deletePlaylist()">Delete</button>
-    <button onclick="playAll()">Play All</button>
+
+    <button id="sideDeleteBtn">Delete</button>
+    <button id="sidePlayAllBtn">Play All</button>
+  </nav>
+
+  <!-- Home page -->
+  <div id="homePage" class="page active">
+    <header><h1>AllPlay 🎶</h1></header>
+    <div class="input-group" id="inputGroup">
+      <input type="text" id="searchInput" placeholder="Search your favorite songs..." aria-label="Search songs"/>
+      <button class="clear-btn" id="clearSearch" aria-label="Clear search input">×</button>
+    </div>
+    <button id="searchButton">Search</button>
+    <p id="loadingText" aria-live="polite">🔄 Searching...</p>
+    <ul id="results" aria-live="polite"></ul>
   </div>
 
-  <ul id="playlistItems"></ul>
-</div>
+  <!-- Playlist page -->
+  <div id="playlistPage" class="page">
+    <h2 style="text-align:center; color:var(--accent);">Your Playlist</h2>
 
-<footer>
-  <p>
-    &copy; 2025 AllPlay. Created by
-    <a href="https://chrohail.org/" target="_blank">Chaudhry Rohail</a>
-  </p>
-</footer>
+    <div class="playlist-controls">
+      <input type="text" id="newPlaylistName" placeholder="New playlist name" aria-label="New playlist name" />
+      <button id="createBtn">Create</button>
 
-<script>
-  const apiKey = "AIzaSyDHP2EWHt-9Pm4_L20lHeVt3Qotb8WYIZU";
-  const resultsList = document.getElementById("results");
-  const playlistItems = document.getElementById("playlistItems");
-  const playlistSelector = document.getElementById("playlistSelector");
-  let playlists = JSON.parse(localStorage.getItem("playlists")) || {};
-  let currentPlaylist = null;
-  let currentVideo = null;
-  let playAllIndex = 0;
+      <select id="playlistSelector" aria-label="Select playlist">
+        <option value="" disabled selected>Select Playlist</option>
+      </select>
 
-  function switchPage(id, el) {
-    document.querySelectorAll(".page").forEach((p) => p.classList.remove("active"));
-    document.getElementById(id).classList.add("active");
-    document.querySelectorAll("nav a").forEach((a) => a.classList.remove("active"));
-    if (el) el.classList.add("active");
-  }
+      <button id="deleteBtn">Delete</button>
+      <button id="playAllBtn">Play All</button>
+    </div>
 
-  function toggleClearButton() {
-    const input = document.getElementById("searchInput");
-    const clearBtn = document.getElementById("clearSearch");
-    clearBtn.style.display = input.value.trim() ? "inline" : "none";
-  }
+    <ul id="playlistItems"></ul>
+  </div>
 
-  function clearSearch() {
-    document.getElementById("searchInput").value = "";
-    document.getElementById("clearSearch").style.display = "none";
-    resultsList.innerHTML = "";
-  }
+  <footer>
+    <p>&copy; 2023–2025 All rights reserved. <a href="https://chrohail.org/" target="_blank" rel="noopener noreferrer">Chaudhry Rohail</a></p>
+  </footer>
 
-  function createPlaylist() {
-    const name = document.getElementById("newPlaylistName").value.trim();
-    if (!name || playlists[name]) return alert("Enter a unique playlist name!");
-    playlists[name] = [];
-    localStorage.setItem("playlists", JSON.stringify(playlists));
-    updatePlaylistSelector();
-    document.getElementById("newPlaylistName").value = "";
-  }
+  <script src="https://www.youtube.com/iframe_api"></script>
+  <script>
+    // Elements
+    const homeTab = document.getElementById('homeTab');
+    const playlistTab = document.getElementById('playlistTab');
+    const homePage = document.getElementById('homePage');
+    const playlistPage = document.getElementById('playlistPage');
 
-  function updatePlaylistSelector() {
-    playlistSelector.innerHTML = '<option value="" disabled>Select Playlist</option>';
-    Object.keys(playlists).forEach((name) => {
-      const opt = document.createElement("option");
-      opt.value = name;
-      opt.textContent = name;
-      if (name === currentPlaylist) opt.selected = true;
-      playlistSelector.appendChild(opt);
+    const searchInput = document.getElementById('searchInput');
+    const clearBtn = document.getElementById('clearSearch');
+    const inputGroup = document.getElementById('inputGroup');
+    const resultsList = document.getElementById('results');
+    const loadingText = document.getElementById('loadingText');
+    const searchButton = document.getElementById('searchButton');
+
+    const playlistItems = document.getElementById('playlistItems');
+
+    // Desktop controls
+    const newPlaylistName = document.getElementById('newPlaylistName');
+    const createBtn = document.getElementById('createBtn');
+    const playlistSelector = document.getElementById('playlistSelector');
+    const deleteBtn = document.getElementById('deleteBtn');
+    const playAllBtn = document.getElementById('playAllBtn');
+
+    // Side nav controls
+    const navToggleBtn = document.getElementById('navToggleBtn');
+    const sideNav = document.getElementById('sideNav');
+    const sideCloseBtn = sideNav.querySelector('.closeBtn');
+    const sideNewPlaylistName = document.getElementById('sideNewPlaylistName');
+    const sideCreateBtn = document.getElementById('sideCreateBtn');
+    const sidePlaylistSelector = document.getElementById('sidePlaylistSelector');
+    const sideDeleteBtn = document.getElementById('sideDeleteBtn');
+    const sidePlayAllBtn = document.getElementById('sidePlayAllBtn');
+    const navHomeLink = document.getElementById('navHomeLink');
+    const navPlaylistLink = document.getElementById('navPlaylistLink');
+
+    const apiKey = 'AIzaSyDHP2EWHt-9Pm4_L20lHeVt3Qotb8WYIZU';
+
+    // Data
+    let playlists = JSON.parse(localStorage.getItem('playlists')) || {};
+    let currentPlaylist = null;
+    let currentVideo = null;
+    let ytPlayer = null;
+    let playAllIndex = 0;
+
+    // --- NAVIGATION ---
+    function switchTab(tab) {
+      if (tab === 'home') {
+        homePage.classList.add('active');
+        playlistPage.classList.remove('active');
+        homeTab.classList.add('active');
+        playlistTab.classList.remove('active');
+        closeNav();
+      } else {
+        playlistPage.classList.add('active');
+        homePage.classList.remove('active');
+        playlistTab.classList.add('active');
+        homeTab.classList.remove('active');
+        closeNav();
+      }
+    }
+    homeTab.onclick = e => { e.preventDefault(); switchTab('home'); };
+    playlistTab.onclick = e => { e.preventDefault(); switchTab('playlist'); };
+    navHomeLink.onclick = e => { e.preventDefault(); switchTab('home'); };
+    navPlaylistLink.onclick = e => { e.preventDefault(); switchTab('playlist'); };
+
+    // --- NAV TOGGLE ---
+    navToggleBtn.onclick = () => {
+      if (sideNav.classList.contains('open')) {
+        closeNav();
+      } else {
+        openNav();
+      }
+    };
+    sideCloseBtn.onclick = closeNav;
+
+    function openNav() {
+      sideNav.classList.add('open');
+      navToggleBtn.style.display = 'none';
+      document.body.style.overflow = 'hidden';
+    }
+    function closeNav() {
+      sideNav.classList.remove('open');
+      navToggleBtn.style.display = 'flex';
+      document.body.style.overflow = '';
+    }
+
+    // --- SEARCH ---
+    searchInput.addEventListener('input', () => {
+      clearBtn.style.display = searchInput.value ? 'inline' : 'none';
+      inputGroup.classList.toggle('active', !!searchInput.value);
     });
-  }
+    clearBtn.onclick = () => {
+      searchInput.value = '';
+      resultsList.innerHTML = '';
+      loadingText.style.display = 'none';
+      clearBtn.style.display = 'none';
+      inputGroup.classList.remove('active');
+    };
+    searchButton.onclick = handleSearch;
+    searchInput.addEventListener('keypress', e => { if (e.key === 'Enter') handleSearch(); });
 
-  function switchPlaylist(name) {
-    currentPlaylist = name;
-    updatePlaylistUI();
-  }
-
-  function deletePlaylist() {
-    if (!currentPlaylist || !playlists[currentPlaylist])
-      return alert("Select a playlist to delete.");
-    if (!confirm(`Delete playlist "${currentPlaylist}"?`)) return;
-    delete playlists[currentPlaylist];
-    currentPlaylist = null;
-    localStorage.setItem("playlists", JSON.stringify(playlists));
-    updatePlaylistSelector();
-    playlistItems.innerHTML = "";
-  }
-
-  function handleSearch() {
-    const query = document.getElementById("searchInput").value.trim();
-    if (!query) return alert("Enter a search term.");
-    resultsList.innerHTML = "Searching...";
-
-    fetch(
-      `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(
-        query
-      )}&type=video&videoCategoryId=10&key=${apiKey}`
-    )
-      .then((res) => res.json())
-      .then((data) => displayResults(data.items));
-  }
-
-  function displayResults(items) {
-    resultsList.innerHTML = "";
-    items.forEach((item) => {
-      const li = document.createElement("li");
-      const row = document.createElement("div");
-      row.className = "content-row";
-      row.innerHTML = `
+    function handleSearch() {
+      const query = searchInput.value.trim();
+      if (!query) return alert('Please enter a search term!');
+      resultsList.innerHTML = '';
+      loadingText.style.display = 'block';
+      fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(query)}&type=video&videoCategoryId=10&key=${apiKey}`)
+        .then(res => res.json())
+        .then(data => {
+          loadingText.style.display = 'none';
+          displayResults(data.items);
+        })
+        .catch(() => {
+          loadingText.style.display = 'none';
+          alert('Error fetching search results.');
+        });
+    }
+    function displayResults(items) {
+      resultsList.innerHTML = '';
+      items.forEach(item => {
+        const li = document.createElement('li');
+        li.innerHTML = `
           <img src="${item.snippet.thumbnails.default.url}" />
           <p>${item.snippet.title}</p>
-          <button onclick="saveToPlaylist('${item.snippet.title.replace(
-            /'/g,
-            "\\'"
-          )}', '${item.id.videoId}')">Save</button>
+          <button class="small-btn">Save</button>
         `;
-      li.appendChild(row);
-      li.onclick = () => playVideoInline(li, item.id.videoId);
-      resultsList.appendChild(li);
-    });
-  }
+        li.querySelector('button').onclick = e => {
+          e.stopPropagation();
+          saveToPlaylist(item.snippet.title, item.id.videoId);
+        };
+        li.onclick = () => playVideoInline(li, item.id.videoId);
+        resultsList.appendChild(li);
+      });
+    }
 
-  function saveToPlaylist(title, videoId) {
-    if (!currentPlaylist) return alert("Select a playlist first.");
-    const list = playlists[currentPlaylist];
-    if (list.find((song) => song.videoId === videoId))
-      return alert("Already in playlist.");
-    list.push({ title, videoId });
-    localStorage.setItem("playlists", JSON.stringify(playlists));
-    updatePlaylistUI();
-  }
+    // --- PLAYLIST MANAGEMENT ---
 
-  function updatePlaylistUI() {
-    playlistItems.innerHTML = "";
-    if (!currentPlaylist || !playlists[currentPlaylist]) return;
-    playlists[currentPlaylist].forEach((song, index) => {
-      const li = document.createElement("li");
-      const row = document.createElement("div");
-      row.className = "content-row";
-      row.innerHTML = `
+    // Create playlist
+    createBtn.onclick = () => {
+      const name = newPlaylistName.value.trim();
+      if (!name || playlists[name]) return alert('Enter a unique playlist name!');
+      playlists[name] = [];
+      currentPlaylist = name;
+      savePlaylists();
+      updatePlaylistSelectors();
+      updatePlaylistUI();
+      newPlaylistName.value = '';
+    };
+    sideCreateBtn.onclick = () => {
+      const name = sideNewPlaylistName.value.trim();
+      if (!name || playlists[name]) return alert('Enter a unique playlist name!');
+      playlists[name] = [];
+      currentPlaylist = name;
+      savePlaylists();
+      updatePlaylistSelectors();
+      updatePlaylistUI();
+      sideNewPlaylistName.value = '';
+    };
+
+    // Update playlist selectors
+    function updatePlaylistSelectors() {
+      [playlistSelector, sidePlaylistSelector].forEach(sel => {
+        sel.innerHTML = '<option value="" disabled>Select Playlist</option>';
+        Object.keys(playlists).forEach(name => {
+          const opt = document.createElement('option');
+          opt.value = name;
+          opt.textContent = name;
+          if (name === currentPlaylist) opt.selected = true;
+          sel.appendChild(opt);
+        });
+      });
+    }
+    playlistSelector.onchange = () => {
+      currentPlaylist = playlistSelector.value;
+      updatePlaylistUI();
+      updatePlaylistSelectors();
+    };
+    sidePlaylistSelector.onchange = () => {
+      currentPlaylist = sidePlaylistSelector.value;
+      updatePlaylistUI();
+      updatePlaylistSelectors();
+    };
+
+    // Delete playlist
+    deleteBtn.onclick = deletePlaylist;
+    sideDeleteBtn.onclick = deletePlaylist;
+    function deletePlaylist() {
+      if (!currentPlaylist || !playlists[currentPlaylist]) {
+        alert('Select a playlist to delete.');
+        return;
+      }
+      if (!confirm(`Delete playlist "${currentPlaylist}"?`)) return;
+      delete playlists[currentPlaylist];
+      currentPlaylist = null;
+      savePlaylists();
+      updatePlaylistSelectors();
+      updatePlaylistUI();
+    }
+
+    // Save playlists to localStorage
+    function savePlaylists() {
+      localStorage.setItem('playlists', JSON.stringify(playlists));
+    }
+
+    // Save single playlist UI
+    function updatePlaylistUI() {
+      playlistItems.innerHTML = '';
+      if (!currentPlaylist || !playlists[currentPlaylist]) return;
+      playlists[currentPlaylist].forEach((song, index) => {
+        const li = document.createElement('li');
+        li.innerHTML = `
           <img src="https://img.youtube.com/vi/${song.videoId}/default.jpg" />
           <p>${song.title}</p>
-          <button onclick="removeFromPlaylist(${index})">Remove</button>
+          <button class="small-btn">Remove</button>
         `;
-      li.appendChild(row);
-      li.onclick = () => playVideoInline(li, song.videoId);
-      playlistItems.appendChild(li);
-    });
-  }
-
-  function removeFromPlaylist(index) {
-    playlists[currentPlaylist].splice(index, 1);
-    localStorage.setItem("playlists", JSON.stringify(playlists));
-    updatePlaylistUI();
-  }
-
-  function playVideoInline(container, videoId) {
-    if (currentVideo) currentVideo.remove();
-    const wrapper = document.createElement("div");
-    wrapper.className = "video-wrapper";
-    wrapper.innerHTML = `<iframe src="https://www.youtube.com/embed/${videoId}?autoplay=1" allowfullscreen></iframe>`;
-    container.appendChild(wrapper);
-    currentVideo = wrapper;
-  }
-
-  function playAll() {
-    if (!currentPlaylist || !playlists[currentPlaylist].length)
-      return alert("Select a playlist with videos.");
-    playAllIndex = 0;
-    playNextInPlaylist();
-  }
-
-  function playNextInPlaylist() {
-    const song = playlists[currentPlaylist][playAllIndex];
-    if (!song) return;
-    const container = playlistItems.children[playAllIndex];
-    playVideoInline(container, song.videoId);
-    playAllIndex++;
-    if (playAllIndex < playlists[currentPlaylist].length) {
-      setTimeout(() => playNextInPlaylist(), 1000 * 30);
+        li.querySelector('button').onclick = e => {
+          e.stopPropagation();
+          removeFromPlaylist(index);
+        };
+        li.onclick = () => playPlaylistVideo(index);
+        playlistItems.appendChild(li);
+      });
     }
-  }
 
-  updatePlaylistSelector();
-</script>
+    // Remove song from current playlist
+    function removeFromPlaylist(index) {
+      playlists[currentPlaylist].splice(index, 1);
+      savePlaylists();
+      updatePlaylistUI();
+    }
+
+    // Save song to current playlist
+    function saveToPlaylist(title, videoId) {
+      if (!currentPlaylist) {
+        alert('Select or create a playlist first.');
+        return;
+      }
+      const list = playlists[currentPlaylist];
+      if (list.find(song => song.videoId === videoId)) {
+        alert('🎵 Already in playlist!');
+        return;
+      }
+      list.push({ title, videoId });
+      savePlaylists();
+      updatePlaylistUI();
+    }
+
+    // --- VIDEO PLAYBACK ---
+
+    let currentPlayingIndex = -1;
+
+    function playVideoInline(container, videoId) {
+      if (currentVideo) currentVideo.remove();
+      const wrapper = document.createElement('div');
+      wrapper.className = 'video-wrapper';
+      wrapper.innerHTML = `<iframe src="https://www.youtube.com/embed/${videoId}?autoplay=1" allowfullscreen></iframe>`;
+      container.appendChild(wrapper);
+      currentVideo = wrapper;
+    }
+
+    function playPlaylistVideo(index) {
+      if (!currentPlaylist || !playlists[currentPlaylist]) return;
+      if (currentVideo) currentVideo.remove();
+      if (ytPlayer && ytPlayer.destroy) ytPlayer.destroy();
+
+      currentPlayingIndex = index;
+      const videoId = playlists[currentPlaylist][index].videoId;
+
+      const container = playlistItems.children[index];
+      const wrapper = document.createElement('div');
+      wrapper.className = 'video-wrapper';
+      wrapper.innerHTML = `<iframe src="https://www.youtube.com/embed/${videoId}?enablejsapi=1&autoplay=1" id="ytPlayer" allowfullscreen></iframe>`;
+      container.appendChild(wrapper);
+      currentVideo = wrapper;
+
+      setTimeout(() => {
+        ytPlayer = new YT.Player('ytPlayer', {
+          events: {
+            onStateChange: event => {
+              if (event.data === YT.PlayerState.ENDED) {
+                const nextIndex = currentPlayingIndex + 1;
+                if (nextIndex < playlists[currentPlaylist].length) {
+                  playPlaylistVideo(nextIndex);
+                }
+              }
+            }
+          }
+        });
+      }, 100);
+    }
+
+    // Play all songs sequentially
+    playAllBtn.onclick = () => {
+      if (!currentPlaylist || !playlists[currentPlaylist] || playlists[currentPlaylist].length === 0) {
+        alert('Select a playlist with songs.');
+        return;
+      }
+      playPlaylistVideo(0);
+    };
+    sidePlayAllBtn.onclick = playAllBtn.onclick;
+
+    // --- Initialization ---
+    function init() {
+      updatePlaylistSelectors();
+      if (Object.keys(playlists).length > 0) {
+        currentPlaylist = Object.keys(playlists)[0];
+        updatePlaylistSelectors();
+        updatePlaylistUI();
+      }
+    }
+    init();
+
+    // --- Accessibility and nav closing ---
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape' && sideNav.classList.contains('open')) {
+        closeNav();
+      }
+    });
+  </script>
 </body>
 </html>
